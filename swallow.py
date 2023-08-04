@@ -46,8 +46,5 @@ if __name__ == "__main__":
     if not args.d:
         i3.on("window::close", listener)
 
-    if process.returncode is not None:
-        sys.exit(process.returncode)
-
     process.send_signal(signal.SIGCONT)
     i3.main()
