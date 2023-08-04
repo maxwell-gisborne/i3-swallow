@@ -22,7 +22,10 @@ swallowed_atom = [False]
 
 process = Popen(args.cmd, stdout=PIPE)
 process.send_signal(signal.SIGSTOP)
-# seems to stop swallowing signal.signal(signal.SIGCHLD, lambda *_: '' if process.poll() else exit())
+# The following line is ment to allow the script to call programs
+# that do not open an xwindow, and not hang forever waiting for the
+# window::close callback. However it seems to brake swallowing for some reason.
+# signal.signal(signal.SIGCHLD, lambda *_: None if process.poll() else exit())
 
 
 def listener(_, event):
