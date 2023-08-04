@@ -4,7 +4,7 @@ import argparse
 import i3ipc
 from subprocess import Popen, PIPE
 import signal
-import sys
+from sys import exit
 
 
 def on_window_event(args, process, swallowed_atom):
@@ -21,7 +21,7 @@ def on_window_event(args, process, swallowed_atom):
 
         elif event.change == 'close' and swallowed:
             focused.command('scratchpad show; floating toggle;')
-            sys.exit()
+            exit()
 
     return event_listener
 
@@ -39,7 +39,9 @@ if __name__ == "__main__":
 
     process = Popen(args.cmd, stdout=PIPE)
     process.send_signal(signal.SIGSTOP)
-    signal.signal(signal.SIGCHLD, lambda *_: sys.exit())
+
+    # The following seems to prevent swallowing?
+    #  signal.signal(signal.SIGCHLD, lambda *_: '' if process.poll() else exit())
 
     listener = on_window_event(args, process, [False])
 
