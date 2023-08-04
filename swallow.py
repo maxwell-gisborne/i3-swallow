@@ -18,7 +18,6 @@ args = parser.parse_args()
 
 i3 = i3ipc.Connection()
 focused = i3.get_tree().find_focused()
-swallowed = False
 
 process = Popen(args.cmd, stdout=PIPE)
 process.send_signal(signal.SIGSTOP)
@@ -29,17 +28,14 @@ process.send_signal(signal.SIGSTOP)
 
 
 def listener(_, event):
-    global swallowed
-
-    if event.change == 'new' and not swallowed:
-        focused.command('focus; move scratchpad')
-        swallowed = True
-        if args.d:
-            i3.main_quit()
-
-    elif event.change == 'close' and swallowed:
-        focused.command('scratchpad show; floating toggle;')
-        exit()
+    match event.change:
+        case 'new':
+            focused.command('focus; move scratchpad')
+            if args.d:
+                i3.main_quit()
+        case 'close':
+            focused.command('scratchpad show; floating toggle;')
+            exit()
 
 
 i3.on("window::new", listener)
