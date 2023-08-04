@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 i3 = i3ipc.Connection()
 focused = i3.get_tree().find_focused()
-swallowed_atom = [False]
+swallowed = False
 
 process = Popen(args.cmd, stdout=PIPE)
 process.send_signal(signal.SIGSTOP)
@@ -29,13 +29,11 @@ process.send_signal(signal.SIGSTOP)
 
 
 def listener(_, event):
-    process.poll()
-
-    swallowed = swallowed_atom[0]
+    global swallowed
 
     if event.change == 'new' and not swallowed:
         focused.command('focus; move scratchpad')
-        swallowed_atom[0] = True
+        swallowed = True
         if args.d:
             i3.main_quit()
 
