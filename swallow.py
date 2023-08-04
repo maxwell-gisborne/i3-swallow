@@ -39,6 +39,7 @@ if __name__ == "__main__":
 
     process = Popen(args.cmd, stdout=PIPE)
     process.send_signal(signal.SIGSTOP)
+    signal.signal(signal.SIGCHLD, lambda *_: sys.exit())
 
     listener = on_window_event(args, process, [False])
 
